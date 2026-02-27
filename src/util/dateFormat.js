@@ -1,15 +1,9 @@
 export default class DateFormat {
-
-  static DefaultFormat = "yyyy-MM-dd HH:mm:ss"
-
   static format = (date, fmt) => {
-    if (!fmt) {
-      fmt = this.DefaultFormat
-    }
     let o = {
       'M+': date.getMonth() + 1, //月份
       'd+': date.getDate(), //日
-      'h+': date.getHours() % 12 === 0 ? 12 : date.getHours() % 12, //小时
+      'h+': date.getHours() % 12 == 0 ? 12 : date.getHours() % 12, //小时
       'H+': date.getHours(), //小时
       'm+': date.getMinutes(), //分
       's+': date.getSeconds(), //秒
@@ -75,7 +69,6 @@ export default class DateFormat {
     db.setUTCFullYear(dateArr[0],dateArr[1]-1,dateArr[2])
     return db.getTime()
   }
-
   static diffDates  = (begin,end)=>{
     let unixDb = DateFormat.getDateTimeStamp(begin)
     let unixDe = DateFormat.getDateTimeStamp(end)
@@ -89,5 +82,22 @@ export default class DateFormat {
       k = k + 24 * 60 * 60 * 1000;
     }
     return dates
+  }
+  static getTime  = (time)=>{
+    // 转换为式分秒
+    let h = parseInt(time / 60 / 60 % 24)
+    h = h < 10 ? '0' + h : h
+    let m = parseInt(time / 60 % 60)
+     m = m < 10 ? '0' + m : m
+    let s = parseInt(time % 60)
+     s = s < 10 ? '0' + s : s
+    // 作为返回值返回
+    if(m == '00') {
+      return s+"秒"
+    }
+     else if(h =='00') {
+      return m +"分"+ s+"秒"
+    }
+
   }
 }

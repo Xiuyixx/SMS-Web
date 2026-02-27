@@ -1,121 +1,48 @@
 <template>
-  <div id="app" @click="destroyMsg">
-    <div v-show="showBackBtn" @click="clickBack">
-      <a-icon class="backId" theme="twoTone" type="home"/>
-    </div>
-    <div v-show="!showBackBtn" @click="update">
-      <a-icon class="backId" type="home"/>
-    </div>
-    <index-page v-show="showRouter" :showMenu="showMenu"></index-page>
-  </div>
+<div id="APP">
+  <router-view />
+   <!-- 挂载全局加载动画组件 -->
+  <GlobalLoadingAnimate></GlobalLoadingAnimate>
+  <Popup />
+  <TabBar />
+</div>
 </template>
 <script>
-import DateFormat from "@/util/dateFormat";
-import {INDEX_PATH} from "@/router";
-import IndexPage from "@/components/IndexPage";
-import Vue from "vue";
-
-
+import { ref, computed } from 'vue';
+import TabBar from '@/components/TabBar.vue'
+import Popup from '@/components//Popup.vue'
+// 导入全局加载动画组件
+import GlobalLoadingAnimate from '@/components/loadingAnimate.vue'
+import { toggleTheme } from "@zougt/vite-plugin-theme-preprocessor/dist/browser-utils";
 export default {
-  components: {
-    IndexPage
-  },
-  data() {
-    return {
-      showMenu: true,
-      startTime: new Date(),
-      showBackBtn: true,
-      showRouter: true,
-      dblTimeout: undefined
-    }
-  },
-  provide() {
-    return {
-      reload: this.reload
-    }
-  },
-  created() {
-    setInterval(() => {
-      document.title = (DateFormat.format(this.startTime, "HH:mm:ss") + "-" + DateFormat.format(new Date(), "HH:mm:ss"))
-    }, 1000)
-  },
-  computed: {},
-  methods: {
-    clickBack() {
-      let timeout = 300;
-      if (!this.dblTimeout) {
-        this.dblTimeout = setTimeout(() => {
-          this.back()
-          this.dblTimeout = undefined
-        }, timeout)
-      } else {
-        clearTimeout(this.dblTimeout);
-        this.dblTimeout = undefined
-        // this.update()
-        this.showMenu = !this.showMenu
-        this.showBackBtn = false
-        setTimeout(() => this.showBackBtn = true, timeout)
-      }
+    name: "APP",
+    components: {
+      TabBar,
+      Popup,
+      GlobalLoadingAnimate
     },
-    back() {
-      if (this.$router.currentRoute.path !== INDEX_PATH) {
-        this.$router.replace(INDEX_PATH)
-      } else {
-        this.showBackBtn = false
-        setTimeout(() => this.showBackBtn = true, 1000)
-        Vue.prototype.$message.warn("当前已在首页了!")
-      }
-    },
-    destroyMsg() {
-      Vue.prototype.$message.destroy()
-    },
-    reload() {
-      this.showRouter = false;
-      location.reload()
-      this.$nextTick(() => {
-        this.showRouter = true
-      })
-    },
-    update() {
-      console.log('刷新页面')
-      this.reload()
+  setup() {
+    toggleTheme({
+      scopeName:  localStorage.getItem('Theme') ? localStorage.getItem('Theme') : 'light',
+});
+    return{
+
     }
   },
 };
 </script>
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  /*align-items: center;*/
-  /*display: flex;*/
-  padding: 0 5%;
-  /*color: #2c3e50;*/
-  color: #000;
-  /*overflow: hidden;*/
-  overflow-x: hidden;
-  overflow-y: scroll;
-  position: absolute;
-  height: 100vh;
-  width: 100vw;
-  background: rgba(87, 87, 94, 0) fixed 0 0 /*url('assets/logo.png')*/;
-  margin: 0;
-  border: 1px solid greenyellow;
+  <style lang="less">
+#APP {
+  .van-popup {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: @dominant-tone;
+  }
+  .van-form {
+    margin-top: 5%;
+    background-color: @dominant-tone;
+  }
 }
-
-/** {*/
-/*  margin: 0;*/
-/*  padding: 0;*/
-/*}*/
-
-.backId {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  font-size: 2em;
-  z-index: 999;
-  border: 1px solid greenyellow;
-}
-</style>
+  </style>

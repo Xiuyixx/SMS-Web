@@ -1,93 +1,61 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import * as KEYS from "@/store/storeKeys";
-import Storage from "vue-ls";
-import * as tools from '@/util/tools'
+import { createStore } from 'vuex'
 
-Vue.use(Storage);
-Vue.use(Vuex)
-
-let STATE;
-
-function storeInitFunc() {
-    let stored = true;
-    setInterval(() => {
-        if (!stored && STATE) {
-            console.log("save store:", STATE)
-            Vue.ls.set(KEYS.STORAGE, STATE, 1000 * 60 * 60 * 24 * 30)
-            STATE = null
-            stored = true
-        } else {
-            stored = false
-        }
-    }, 1000)
-    return Vue.ls.get(KEYS.STORAGE, {});
-}
-
-function commitStorage(state) {
-    STATE = state;
-}
-
-export default new Vuex.Store({
-    state: storeInitFunc(),
-    getters: {
-        [KEYS.INITED]: state => {
-            let orDefault = tools.getOrDefault(state, KEYS.HISTORY_SERVER, []);
-            return orDefault.length > 0 && orDefault[0][KEYS.SERVER_URL];
-        },
-        [KEYS.SECRET]: state => {
-            let orDefault = tools.getOrDefault(state, KEYS.HISTORY_SERVER, []);
-            return orDefault.length > 0 ? tools.getOrDefault(orDefault[0], KEYS.SECRET, "") : "";
-        },
-        [KEYS.SERVER_URL]: state => {
-            let orDefault = tools.getOrDefault(state, KEYS.HISTORY_SERVER, []);
-            const raw = orDefault.length > 0 ? tools.getOrDefault(orDefault[0], KEYS.SERVER_URL, "") : "";
-            return tools.normalizeServerUrl(raw);
-        },
-        [KEYS.HISTORY_SERVER]: state => tools.getOrDefault(state, KEYS.HISTORY_SERVER, []),
-        [KEYS.CONFIG_QUERY]: state => tools.getOrDefault(state, KEYS.CONFIG_QUERY, {}),
-        [KEYS.ENABLE_API_BATTERY_QUERY]: state => tools.getOrDefault(state, KEYS.ENABLE_API_BATTERY_QUERY, false),
+const store = createStore({
+    state: {
+        // 加载动画
+        showLoading: false,
+        // 登录弹窗
+        loginPopup: false,
+        serverUrl: '',
+        sign: '',
+        theme:'light',
+        accountList:[]
     },
     mutations: {
-        [KEYS.STORAGE](state, o) {
-            commitStorage(state)
+        // 设置加载动画
+        SET_LOADING(state, status) {
+            state.showLoading = status
         },
-        [KEYS.HISTORY_SERVER](state, data) {
-            let key = KEYS.HISTORY_SERVER;
-            let val = tools.getOrDefault(state, key, []);
-
-            const normalized = {
-                ...data,
-                [KEYS.SERVER_URL]: tools.normalizeServerUrl(data[KEYS.SERVER_URL])
-            }
-
-            let newVar = tools.unique([normalized, ...val], o => o[KEYS.SERVER_URL]);
-            Vue.set(state, key, newVar)
-            commitStorage(state)
+        // 设置加载动画
+        SET_LOGIN_POPUP(state, status) {
+            state.loginPopup = status
         },
-        [KEYS.DEL_SERVER](state, data) {
-            let val = tools.getOrDefault(state, KEYS.HISTORY_SERVER, []);
-            let newVal = val.filter(it => !data || data !== it[KEYS.SERVER_URL]);
-            Vue.set(state, KEYS.HISTORY_SERVER, newVal);
-            commitStorage(state)
+        SET_SIGN(state, sign) {
+            state.sign = sign
         },
-        [KEYS.CONFIG_QUERY](state, data) {
-            Vue.set(state, KEYS.CONFIG_QUERY, data);
-            commitStorage(state)
+        SET_SERVER_URL(state, serverUrl) {
+            state.serverUrl = serverUrl
+        },
+        SET_THEME(state, theme) {
+            state.theme = theme
+        },
+        SET_ACCOUNT_LIST(state, accountList) {
+            state.accountList = accountList
         },
     },
     actions: {
-        [KEYS.STORAGE]({dispatch, commit}, secret) {
-            commit(KEYS.STORAGE, secret);
+        // 设置加载动画
+       HANDLE_SET_LOADING(context, status) {
+            context.commit('SET_LOADING', status)
         },
-        [KEYS.HISTORY_SERVER]({dispatch, commit}, data) {
-            commit(KEYS.HISTORY_SERVER, data)
+        // 隐藏显示登录弹窗
+        IS_LOGIN_POPUP(context, status) {
+            context.commit('SET_LOGIN_POPUP', status)
         },
-        [KEYS.CONFIG_QUERY]({dispatch, commit}, data) {
-            commit(KEYS.CONFIG_QUERY, data);
+        SAVE_SIGN(context, sign) {
+            context.commit('SET_SIGN', sign)
         },
-        [KEYS.DEL_SERVER]({dispatch, commit}, data) {
-            commit(KEYS.DEL_SERVER, data);
-        }
-    }
+        SAVE_SERVER_URL(context, serverUrl) {
+            context.commit('SET_SERVER_URL', serverUrl)
+        },
+        SAVE_THEME(context, theme) {
+            context.commit('SET_THEME', theme)
+        },
+        SAVE_ACCOUNT_LIST(context, accountList) {
+            context.commit('SET_ACCOUNT_LIST', accountList)
+        },
+    },
+    modules: {},
 })
+
+export default store
