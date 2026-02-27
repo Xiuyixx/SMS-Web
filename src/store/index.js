@@ -41,7 +41,8 @@ export default new Vuex.Store({
         },
         [KEYS.SERVER_URL]: state => {
             let orDefault = tools.getOrDefault(state, KEYS.HISTORY_SERVER, []);
-            return orDefault.length > 0 ? tools.getOrDefault(orDefault[0], KEYS.SERVER_URL, "") : "";
+            const raw = orDefault.length > 0 ? tools.getOrDefault(orDefault[0], KEYS.SERVER_URL, "") : "";
+            return tools.normalizeServerUrl(raw);
         },
         [KEYS.HISTORY_SERVER]: state => tools.getOrDefault(state, KEYS.HISTORY_SERVER, []),
         [KEYS.CONFIG_QUERY]: state => tools.getOrDefault(state, KEYS.CONFIG_QUERY, {}),
@@ -54,7 +55,13 @@ export default new Vuex.Store({
         [KEYS.HISTORY_SERVER](state, data) {
             let key = KEYS.HISTORY_SERVER;
             let val = tools.getOrDefault(state, key, []);
-            let newVar = tools.unique([data, ...val], o => o[KEYS.SERVER_URL]);
+
+            const normalized = {
+                ...data,
+                [KEYS.SERVER_URL]: tools.normalizeServerUrl(data[KEYS.SERVER_URL])
+            }
+
+            let newVar = tools.unique([normalized, ...val], o => o[KEYS.SERVER_URL]);
             Vue.set(state, key, newVar)
             commitStorage(state)
         },

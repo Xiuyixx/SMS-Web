@@ -57,3 +57,19 @@ export function unique(arr, func) {
         return key && !res.has(key) && res.set(key, true);
     });
 }
+
+export function normalizeServerUrl(input) {
+    if (!input) return '';
+
+    let url = String(input).trim();
+    if (!url) return '';
+
+    // If user enters "192.168.1.2:5000" without scheme,
+    // the browser treats it as a relative path and hits current origin.
+    if (!/^https?:\/\//i.test(url)) {
+        url = `http://${url}`;
+    }
+
+    url = url.replace(/\/+$/, '');
+    return url;
+}
