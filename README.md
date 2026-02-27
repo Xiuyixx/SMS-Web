@@ -1,43 +1,42 @@
 # SMS-Web
 
-`smsForwardClientWeb` 的纯 Web 版（去掉 Electron 依赖），用于部署到 Cloudflare Pages。
+这是 `smsForwardClientWeb` 的 **纯 Web 版**（Vue2 + Vue CLI），用于**直接部署到 Cloudflare Pages**。
 
-## Cloudflare Pages 部署
+本项目的图片资源（如 `logo.png`、`sms.png`）已放在仓库的 `src/assets/` 中，构建后会随静态文件一起发布，不需要走外链，也不会触发图片防盗链。
 
-在 Cloudflare Dashboard → **Pages** → **Create a project**：
+## 1. 部署到 Cloudflare Pages（中文步骤）
 
-- **Framework preset**: Vue
-- **Build command**: `npm ci && npm run build`
-- **Build output directory**: `docs`
-- **Environment**:
-  - `NODE_VERSION`: `22`（或 20+ 均可）
+1) 打开 Cloudflare 控制台 → **Pages** → **Create a project**
+2) 连接 GitHub，选择仓库：`Xiuyixx/SMS-Web`
+3) 构建配置填写：
 
-构建产物在 `docs/`，可直接作为静态站点托管。
+- **Framework preset**：Vue
+- **Build command**：`npm ci && npm run build`
+- **Build output directory**：`docs`
 
-## 图片防盗链（可选）
+4) （推荐）环境变量：
 
-如果后端/外链图片启用了 `Referer` 防盗链，浏览器从 Pages 域名直接请求可能被 403。
+- `NODE_VERSION`：`22`（或 20+ 都可以）
 
-本项目提供一个 Cloudflare Pages Function 作为图片代理：
+5) 点击 Deploy，等待首次构建完成即可访问。
 
-- 代理地址：`/img?url=<encoded>`
-- 代码位置：`functions/img.js`
+说明：构建产物在 `docs/`，这是一个纯静态站点，Pages 会自动托管。
 
-示例：
+## 2. 图片与防盗链
 
-```text
-https://<your-pages-domain>/img?url=https%3A%2F%2Fexample.com%2Fa.png
-```
+- 目前项目代码中 **没有引用任何外链图片**。
+- 如果你后续要添加图片：建议直接把图片放进 `src/assets/`，然后在 Vue 组件里用本地路径引用（和 `logo.png` 的用法一样），这样最稳。
 
-安全建议：在 Pages 项目里配置环境变量 `IMG_PROXY_ALLOWLIST`，只允许代理指定域名：
-
-```text
-IMG_PROXY_ALLOWLIST=example.com,static.example.com
-```
-
-## 开发
+## 3. 本地开发
 
 ```bash
 npm install
 npm run serve
+```
+
+## 4. 本地构建
+
+```bash
+npm ci
+npm run build
 ```
