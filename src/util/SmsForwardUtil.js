@@ -7,10 +7,25 @@ const sisgn = (timestamp, sign) => {
     return encodeURIComponent(CryptoJS.enc.Base64.stringify(hash));
 }
 
-function store(key, sign) {
-    if (sign) {
-        localStorage.setItem(key, sign)
-        return sign;
+function normalizeServerUrl(input) {
+    if (!input) return '';
+
+    let url = String(input).trim();
+    if (!url) return '';
+
+    if (!/^https?:\/\//i.test(url)) {
+        url = `http://${url}`;
+    }
+
+    url = url.replace(/\/+$/, '');
+    return url;
+}
+
+function store(key, value) {
+    if (value != null) {
+        const storedValue = key === 'serverUrl' ? normalizeServerUrl(value) : value;
+        localStorage.setItem(key, storedValue)
+        return storedValue;
     }
     var item = localStorage.getItem(key);
     return item ? item : '';
