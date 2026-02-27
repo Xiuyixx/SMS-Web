@@ -1,0 +1,84 @@
+<template>
+  <div id="Setting">
+    <van-nav-bar title="设置" />
+    <Cell></Cell>
+    <van-cell-group inset>
+      <van-cell :icon="icons.switchAccount" title="切换配置" is-link @click="switchAccount" />
+      <van-cell :icon="icons.switchTheme" title="切换主题" is-link @click="switchoverTheme" />
+      <van-cell :icon="icons.logout" title="退出登录" is-link @click="logOut" />
+    </van-cell-group>
+  </div>
+</template>
+<script>
+import store from '@/store/index.js'
+import { useRouter } from 'vue-router'
+import Util from "@/util/SmsForwardUtil";
+import Cell from '@/components/Cell.vue'
+import { Dialog } from 'vant'
+
+import iconSwitchAccount from '@/assets/remote/71c1a8c32da1772e.png'
+import iconSwitchTheme from '@/assets/remote/173ff349af76e415.png'
+import iconLogout from '@/assets/remote/f1e062a931e18557.png'
+
+export default {
+  name: "Setting",
+  components: {
+    Cell
+  },
+  setup() {
+    const router = useRouter()
+
+    const switchAccount = () => {
+      router.push({ path: '/account' })
+    }
+
+    const logOut = () => {
+      Dialog.confirm({
+        title: '温馨提示',
+        message: '如果需要修改或替换账户请选择切换配置操作,退出登录将清除所有账户数据！你确定这样做吗？'
+      })
+        .then(() => {
+          localStorage.clear()
+          store.dispatch('IS_LOGIN_POPUP', true)
+          router.replace({ path: '/' })
+        })
+        .catch(() => {
+          // on cancel
+        })
+    }
+
+    const switchoverTheme = () => {
+      Util.theme()
+    }
+
+    const icons = {
+      switchAccount: iconSwitchAccount,
+      switchTheme: iconSwitchTheme,
+      logout: iconLogout
+    }
+
+    return {
+      logOut,
+      switchAccount,
+      switchoverTheme,
+      icons
+    }
+  }
+}
+</script>
+<style scoped lang="less">
+#Setting {
+  height: 100vh;
+  overflow: auto;
+  background-color: @dominant-tone;
+
+  .van-cell-group {
+    margin-top: 2.5rem;
+  }
+
+  ::v-deep .van-icon__image {
+    width: 1.5em;
+    height: 1.5em;
+  }
+}
+</style>
