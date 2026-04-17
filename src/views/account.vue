@@ -180,6 +180,16 @@ export default {
             const serverUrl = (changeThisSelect.serverUrl || '').trim()
             const sign = (changeThisSelect.sign || '').trim()
 
+            // 混合内容检测
+            if (window.location.protocol === 'https:' && /^http:\/\//i.test(serverUrl)) {
+              Notify({
+                type: 'warning',
+                message: '当前页面为 HTTPS，无法访问 HTTP 后端。请改用 HTTP 打开本页。',
+                duration: 5000
+              })
+              return
+            }
+
             const data = {
               data: {},
               timestamp: timestamp,
@@ -227,8 +237,14 @@ export default {
 
       values.id = maxId + 1
       values.deviceName = (values.deviceName || '').trim()
-      values.serverUrl = (values.serverUrl || '').trim()
+      let serverUrl = (values.serverUrl || '').trim()
       values.sign = (values.sign || '').trim()
+
+      // 自动补协议头
+      if (serverUrl && !/^https?:\/\//i.test(serverUrl)) {
+        serverUrl = window.location.protocol + '//' + serverUrl
+      }
+      values.serverUrl = serverUrl
 
       accountList.value.push(values)
 
@@ -238,10 +254,16 @@ export default {
     }
 
     const onEditSubmit = (values) => {
-      values.id = editId
+      values.id = editId.value
       values.deviceName = (values.deviceName || '').trim()
-      values.serverUrl = (values.serverUrl || '').trim()
+      let serverUrl = (values.serverUrl || '').trim()
       values.sign = (values.sign || '').trim()
+
+      // 自动补协议头
+      if (serverUrl && !/^https?:\/\//i.test(serverUrl)) {
+        serverUrl = window.location.protocol + '//' + serverUrl
+      }
+      values.serverUrl = serverUrl
 
       const numID = accountList.value.map((item) => item.id).indexOf(editId.value)
       accountList.value.splice(numID, 1, values)

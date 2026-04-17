@@ -70,9 +70,24 @@ export default {
       return (store.state.loginPopup)
     });
     const onSubmit = (values) => {
-      const serverUrl = (values.serverUrl || '').trim();
+      let serverUrl = (values.serverUrl || '').trim();
       const sign = (values.sign || '').trim();
       const deviceName = (values.deviceName || '').trim();
+
+      // 自动补协议头
+      if (serverUrl && !/^https?:\/\//i.test(serverUrl)) {
+        serverUrl = window.location.protocol + '//' + serverUrl;
+      }
+
+      // 混合内容检测：HTTPS 页面访问 HTTP 后端
+      if (window.location.protocol === 'https:' && /^http:\/\//i.test(serverUrl)) {
+        Notify({
+          type: 'warning',
+          message: '当前页面为 HTTPS，无法访问 HTTP 后端。请改用 HTTP 打开本页，或将后端配置为 HTTPS。',
+          duration: 5000
+        });
+        return;
+      }
 
       let timestamp = new Date().getTime();
       let data = {
@@ -103,7 +118,11 @@ export default {
           Notify({ type: 'danger', message: response.data.msg });
         }
       }).catch(response => {
-        Notify({ type: 'danger', message: '服务器连接失败,请检查地址' });
+        if (window.location.protocol === 'https:' && /^http:\/\//i.test(serverUrl)) {
+          Notify({ type: 'danger', message: 'HTTPS 页面无法访问 HTTP 后端（浏览器已拦截）。请用 HTTP 打开本页，或将后端配置为 HTTPS。', duration: 5000 });
+        } else {
+          Notify({ type: 'danger', message: '服务器连接失败,请检查地址' });
+        }
       })
     };
     return {
