@@ -41,6 +41,7 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     store.dispatch('IS_LOGIN_POPUP', true)
+    next()
   }
 });
 

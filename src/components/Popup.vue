@@ -7,12 +7,14 @@
       closeable
       :style="{
         width: 'min(520px, 95vw)',
-        maxHeight: '90vh',
+        maxHeight: '85vh',
         padding: '16px 16px 8px',
         boxSizing: 'border-box',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center'
+        alignItems: 'center',
+        overflow: 'auto',
+        WebkitOverflowScrolling: 'touch'
       }"
     >
       <van-image

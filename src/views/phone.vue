@@ -74,7 +74,8 @@ export default {
 </script>
 <style scoped lang="less">
 .phone {
-    height: 100vh;
+    min-height: 100vh;
+  min-height: -webkit-fill-available;
   overflow: auto;
   background-color: @dominant-tone;
   .van-search {

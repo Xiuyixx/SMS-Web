@@ -36,7 +36,7 @@
     </van-radio-group>
 
     <!-- 新增账户弹窗 -->
-    <van-action-sheet v-model:show="show" title="新增账户" :style="{ height: '50%' }">
+    <van-action-sheet v-model:show="show" title="新增账户" :style="{ maxHeight: '80vh', overflow: 'auto' }">
       <div id="AccountList">
         <van-image round width="100px" height="100px" :src="defaultAvatarLarge" />
         <van-form @submit="onSubmit">
@@ -75,7 +75,7 @@
     </van-action-sheet>
 
     <!-- 修改账户弹窗 -->
-    <van-action-sheet v-model:show="editShow" title="修改账户" :style="{ height: '50%' }">
+    <van-action-sheet v-model:show="editShow" title="修改账户" :style="{ maxHeight: '80vh', overflow: 'auto' }">
       <div id="AccountList">
         <van-image round width="100px" height="100px" :src="defaultAvatarLarge" />
         <van-form @submit="onEditSubmit">
@@ -301,9 +301,11 @@ export default {
 
 <style scoped lang="less">
 #Account {
-  height: 100vh;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
   overflow: auto;
   background-color: @dominant-tone;
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 ::v-deep .van-contact-list__bottom {

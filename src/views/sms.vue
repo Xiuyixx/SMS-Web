@@ -99,7 +99,8 @@ export default {
 </script>
 <style scoped lang="less">
 #Sms {
-  height: 100vh;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
   overflow: auto;
   background-color: @dominant-tone;
 }
