@@ -10,34 +10,6 @@ Fork 来源：`https://github.com/aichuguang/SendSms`
 
 账户编辑/删除：为兼容手机和电脑浏览器，账户列表提供“编辑/删除”按钮（不依赖左右滑动）。
 
-## 部署到 Cloudflare Worker（推荐·一键部署）
-
-相比 Pages，Worker 部署更简单，无需在 Cloudflare 控制台操作，一条命令搞定。
-
-### 前置要求
-
-- Node.js 18+
-- 已登录 Cloudflare 账户：`npx wrangler login`
-
-### 一键部署
-
-```bash
-npm run deploy
-```
-
-这条命令会自动：
-1. 构建 Vue 项目（`npm run build`）
-2. 用 Wrangler 把 `dist/` 推送为 CF Worker + Assets
-
-### 访问
-
-部署完成后，Wrangler 会输出类似 `https://sms-web.<你的subdomain>.workers.dev` 的地址。
-
-> **注意事项**（和 Pages 部署相同）：
-> - 服务端地址必须带协议（`http://` 或 `https://`）
-> - HTTPS 页面请求 HTTP 服务端会被浏览器拦截（Mixed Content）
-> - 服务端需要允许跨域（CORS）
-
 ## 部署到 Cloudflare Pages（推荐）
 
 Cloudflare 控制台 → Pages → Create a project → 选择仓库 `SMS-Web`，然后填写：
