@@ -1,0 +1,7 @@
+name = "sms-web"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# 将 dist 目录作为静态资源托管
+[assets]
+directory = "./dist"
